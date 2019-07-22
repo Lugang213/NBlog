@@ -23,7 +23,7 @@ async function isAdmin (ctx, next) {
 }
 
 module.exports = (app) => {
-  router.get('/', require('./home').index)
+  router.get('/', require('./posts').index)
   // 登录注册
   router.get('/signup', require('./user').signup)
   router.post('/signup', require('./user').signup)
@@ -44,9 +44,15 @@ module.exports = (app) => {
   router.get('/category', isAdmin, require('./category').list)
   router.get('/category/new', isAdmin, require('./category').create)
   router.post('/category/new', isAdmin, require('./category').create)
-  router.get('/category/:id/delete', isAdmin, require('./category').destroy)
+  // router.get('/category/:id/delete', isAdmin, require('./category').destroy)
 
   app
     .use(router.routes())
     .use(router.allowedMethods())
+
+  app.use(async (ctx, next) => {
+    await ctx.render('404', {
+      title: 'page not find'
+    })
+  })
 }

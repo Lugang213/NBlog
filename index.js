@@ -6,11 +6,12 @@ const mongoose = require('mongoose')
 const session = require('koa-session')
 const bodyParser = require('koa-bodyparser')
 const marked = require('marked')
+
+const flash = require('./middlewares/flash')
+const error = require('./middlewares/error_handler')
+
 const router = require('./routes')
 const CONFIG = require('./config/config')
-const flash = require('./middlewares/flash')
-
-
 marked.setOptions({
   renderer: new marked.Renderer(),
   gfm: true,
@@ -22,13 +23,16 @@ marked.setOptions({
   smartypants: false
 })
 const app = module.exports = new Koa()
+
+app.use(error())
+
 mongoose.connect(CONFIG.mongodb)
 
 app.use(serve(
   path.join(__dirname, 'public')
 ))
-app.use(views(path.join(__dirname,'views'), {
-  map: {html: 'nunjucks'}
+app.use(views(path.join(__dirname, 'views'), {
+  map: { html: 'nunjucks' }
 }))
 app.keys = ['somethings']
 app.use(session({
